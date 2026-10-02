@@ -1,0 +1,12 @@
+import { Router } from 'express';
+import { authenticate, requireRoles } from '../middleware/auth';
+import { validate } from '../middleware/validate';
+import { patientProfileSchema, medicalRecordSchema } from '../validation/patient-centric';
+import * as c from '../controllers/patient-centric';
+const r=Router();
+r.get('/patient/me',authenticate,requireRoles('PATIENT','DOCTOR'),c.getProfile);
+r.patch('/patient/me',authenticate,requireRoles('PATIENT','DOCTOR'),validate(patientProfileSchema),c.updateProfile);
+r.get('/patient/me/medical-records',authenticate,requireRoles('PATIENT','DOCTOR'),c.getRecords);
+r.post('/patient/me/medical-records',authenticate,requireRoles('PATIENT','DOCTOR'),validate(medicalRecordSchema),c.addRecord);
+r.get('/profile/me/roles',authenticate,c.getRoles);
+export default r;

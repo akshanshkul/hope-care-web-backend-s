@@ -1,0 +1,622 @@
+{
+  "info": {
+    "_postman_id": "hope-care-phase1-api",
+    "name": "Hope-Care Phase 1 API",
+    "description": "Postman collection for the current Hope-Care API. Patients, doctors, hospitals, and CMO offices use separate account flows; profile fields are stored on the role account tables. Use the demo login or register a synthetic account before calling protected requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "patientId", "value": "" },
+    { "key": "doctorId", "value": "" },
+    { "key": "hospitalId", "value": "" },
+    { "key": "departmentId", "value": "" },
+    { "key": "appointmentId", "value": "" },
+    { "key": "cmoId", "value": "" },
+    { "key": "documentId", "value": "" },
+    { "key": "addressId", "value": "" },
+    { "key": "profileDocumentId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health check",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/health"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register patient",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"test.patient@example.com\",\"password\":\"Patient#2026\",\"role\":\"PATIENT\",\"firstName\":\"Test\",\"lastName\":\"Patient\",\"mobile\":\"+919876543210\",\"aadhaar\":\"999988887777\"}"
+            },
+            "url": "{{baseUrl}}/api/v1/auth/register"
+          }
+        },
+        {
+          "name": "Register doctor account",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"test.doctor@example.com\",\"password\":\"Doctor#2026\",\"role\":\"DOCTOR\",\"firstName\":\"Demo\",\"lastName\":\"Doctor\",\"mobile\":\"+919876543211\",\"aadhaar\":\"888877776666\",\"degree\":\"MBBS, MD Cardiology\",\"registrationNumber\":\"NMC-DEMO-2001\"}"
+            },
+            "url": "{{baseUrl}}/api/v1/auth/register"
+          }
+        },
+        {
+          "name": "Register hospital account",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"test.hospital@example.com\",\"password\":\"Hospital#2026\",\"role\":\"HOSPITAL\"}"
+            },
+            "url": "{{baseUrl}}/api/v1/auth/register"
+          }
+        },
+        {
+          "name": "Register district CMO account",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"test.cmo@example.com\",\"password\":\"Cmo#2026\",\"role\":\"CMO_DISTRICT\"}"
+            },
+            "url": "{{baseUrl}}/api/v1/auth/register"
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.accessToken) pm.collectionVariables.set('accessToken', json.accessToken);",
+                  "if (json.refreshToken) pm.collectionVariables.set('refreshToken', json.refreshToken);",
+                  "if (json.user && json.user.patientId) pm.collectionVariables.set('patientId', json.user.patientId);",
+                  "if (json.user && json.user.id) pm.collectionVariables.set('accountId', json.user.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"demo.patient@hope-care.test\",\"password\":\"DemoPatient#2026\",\"role\":\"PATIENT\"}"
+            },
+            "url": "{{baseUrl}}/api/v1/auth/login"
+          }
+        },
+        {
+          "name": "Login doctor",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"test.doctor@example.com\",\"password\":\"Doctor#2026\",\"role\":\"DOCTOR\"}"
+            },
+            "url": "{{baseUrl}}/api/v1/auth/login"
+          }
+        },
+        {
+          "name": "Login hospital",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"test.hospital@example.com\",\"password\":\"Hospital#2026\",\"role\":\"HOSPITAL\"}"
+            },
+            "url": "{{baseUrl}}/api/v1/auth/login"
+          }
+        },
+        {
+          "name": "Refresh access token",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"refreshToken\":\"{{refreshToken}}\"}"
+            },
+            "url": "{{baseUrl}}/api/v1/auth/refresh"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Profiles and roles",
+      "item": [
+        {
+          "name": "Get my profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/profile/me"
+          }
+        },
+        {
+          "name": "Update my profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"displayName\":\"Aarav Sharma\",\"phone\":\"+919000000000\",\"profileImageKey\":\"profiles/demo/patient.jpg\"}"
+            },
+            "url": "{{baseUrl}}/api/v1/profile/me"
+          }
+        },
+        {
+          "name": "Get my roles",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/profile/me/roles"
+          }
+        },
+        {
+          "name": "Get doctor or hospital profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/profile/me"
+          }
+        },
+        {
+          "name": "Update doctor profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"displayName\":\"Dr. Demo Doctor\",\"phone\":\"+919876543211\",\"addressLine\":\"Medical College Road\",\"city\":\"Kasganj\",\"state\":\"Uttar Pradesh\",\"postalCode\":\"207123\"}"
+            },
+            "url": "{{baseUrl}}/api/v1/profile/me"
+          }
+        },
+        {
+          "name": "Update hospital profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"displayName\":\"Hope-Care Kasganj District Hospital\",\"phone\":\"+919876543210\",\"officeAddress\":\"District Hospital Road, Kasganj, Uttar Pradesh 207123\"}"
+            },
+            "url": "{{baseUrl}}/api/v1/profile/me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Patient",
+      "item": [
+        {
+          "name": "Get patient profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/patient/me"
+          }
+        },
+        {
+          "name": "Update patient profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"firstName\":\"Aarav\",\"lastName\":\"Sharma\",\"preferredName\":\"Aarav\",\"sexAtBirth\":\"MALE\",\"bloodGroup\":\"O_POSITIVE\",\"emergencyContact\":{\"name\":\"Meera Sharma\",\"phone\":\"+919000000001\",\"relation\":\"MOTHER\"}}"
+            },
+            "url": "{{baseUrl}}/api/v1/patient/me"
+          }
+        },
+        {
+          "name": "List medical records",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/patient/me/medical-records"
+          }
+        },
+        {
+          "name": "Add medical record",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"recordType\":\"FOLLOW_UP\",\"title\":\"Blood pressure follow-up\",\"clinicalData\":{\"bloodPressure\":\"128/82\",\"notes\":\"Continue monitoring\"}}"
+            },
+            "url": "{{baseUrl}}/api/v1/patient/me/medical-records"
+          }
+        },
+        {
+          "name": "List patient medical history",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/patients/me/medical-history"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Patient addresses and documents",
+      "item": [
+        {
+          "name": "Upload address proof",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const documentId = json.document && (json.document.documentId || json.document.id);",
+                  "if (documentId) pm.collectionVariables.set('documentId', documentId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "documentType", "value": "ADDRESS_PROOF", "type": "text" },
+                { "key": "file", "type": "file", "src": "" }
+              ]
+            },
+            "url": "{{baseUrl}}/api/v1/documents/upload"
+          }
+        },
+        {
+          "name": "Create current address",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const addressId = json.data && (json.data.addressId || json.data.id);",
+                  "if (addressId) pm.collectionVariables.set('addressId', addressId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"addressType\":\"CURRENT\",\"addressLine1\":\"123 Main Road\",\"addressLine2\":\"Near City Hospital\",\"landmark\":\"City Hospital\",\"country\":\"India\",\"state\":\"Uttar Pradesh\",\"district\":\"Meerut\",\"city\":\"Meerut\",\"pincode\":\"250001\",\"documentId\":\"{{documentId}}\"}"
+            },
+            "url": "{{baseUrl}}/api/v1/patients/me/addresses"
+          }
+        },
+        {
+          "name": "List active addresses",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/patients/me/addresses"
+          }
+        },
+        {
+          "name": "List address history",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/patients/me/addresses/history"
+          }
+        },
+        {
+          "name": "Get address",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/patients/me/addresses/{{addressId}}"
+          }
+        },
+        {
+          "name": "Get address status history",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/patients/me/addresses/{{addressId}}/status-history"
+          }
+        },
+        {
+          "name": "Upload replacement address proof",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const documentId = json.document && (json.document.documentId || json.document.id);",
+                  "if (documentId) pm.collectionVariables.set('documentId', documentId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "documentType", "value": "ADDRESS_PROOF", "type": "text" },
+                { "key": "file", "type": "file", "src": "" }
+              ]
+            },
+            "url": "{{baseUrl}}/api/v1/documents/upload"
+          }
+        },
+        {
+          "name": "Replace current address (creates new version)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const newAddressId = json.data && (json.data.addressId || json.data.id);",
+                  "if (newAddressId) pm.collectionVariables.set('addressId', newAddressId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"addressLine1\":\"456 New Main Road\",\"country\":\"India\",\"state\":\"Uttar Pradesh\",\"district\":\"Meerut\",\"city\":\"Meerut\",\"pincode\":\"250002\",\"documentId\":\"{{documentId}}\"}"
+            },
+            "url": "{{baseUrl}}/api/v1/patients/me/addresses/{{addressId}}"
+          }
+        },
+        {
+          "name": "Get document metadata",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/documents/{{documentId}}"
+          }
+        },
+        {
+          "name": "Get document signed URL",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/documents/{{documentId}}/url"
+          }
+        },
+        {
+          "name": "Upload profile photo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const documentId = json.document && (json.document.documentId || json.document.id);",
+                  "if (documentId) pm.collectionVariables.set('profileDocumentId', documentId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "documentType", "value": "PROFILE_PHOTO", "type": "text" },
+                { "key": "file", "type": "file", "src": "" }
+              ]
+            },
+            "url": "{{baseUrl}}/api/v1/documents/upload"
+          }
+        },
+        {
+          "name": "Attach profile photo",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"profileDocumentId\":\"{{profileDocumentId}}\"}"
+            },
+            "url": "{{baseUrl}}/api/v1/patients/me/profile"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Hospitals and departments",
+      "item": [
+        {
+          "name": "List departments",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/departments"
+          }
+        },
+        {
+          "name": "Create department",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"name\":\"Neurology\",\"description\":\"Brain and nervous system care\"}" },
+            "url": "{{baseUrl}}/api/v1/departments"
+          }
+        },
+        {
+          "name": "List hospitals",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/hospitals"
+          }
+        },
+        {
+          "name": "Create hospital with details",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "******" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Hope-Care City Hospital\",\"addressLine1\":\"Hospital Road\",\"addressLine2\":\"Near Central Bus Stand\",\"landmark\":\"Central Bus Stand\",\"district\":\"Kasganj\",\"state\":\"Uttar Pradesh\",\"pincode\":\"207123\",\"country\":\"India\",\"phone\":\"+919876543210\",\"email\":\"contact@hospital.example\",\"emergencyPhone\":\"108\",\"description\":\"24-hour secondary care hospital\",\"latitude\":27.8082,\"longitude\":78.6461}"
+            },
+            "url": "{{baseUrl}}/api/v1/hospitals"
+          }
+        },
+        {
+          "name": "Associate doctor with hospital",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"doctorId\":\"{{doctorId}}\",\"departmentId\":\"{{departmentId}}\"}"
+            },
+            "url": "{{baseUrl}}/api/v1/hospitals/doctors"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Appointments",
+      "item": [
+        {
+          "name": "Book appointment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"hospitalId\":\"{{hospitalId}}\",\"doctorId\":\"{{doctorId}}\",\"departmentId\":\"{{departmentId}}\",\"scheduledAt\":\"2026-10-15T10:00:00+05:30\",\"reason\":\"Routine cardiac check-up\"}"
+            },
+            "url": "{{baseUrl}}/api/v1/appointments"
+          }
+        },
+        {
+          "name": "List appointments",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/appointments"
+          }
+        },
+        {
+          "name": "Route appointment to doctor",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"doctorId\":\"{{doctorId}}\",\"departmentId\":\"{{departmentId}}\",\"note\":\"Assigned by hospital\"}"
+            },
+            "url": "{{baseUrl}}/api/v1/appointments/{{appointmentId}}/route"
+          }
+        },
+        {
+          "name": "Update appointment status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"status\":\"CONFIRMED\",\"note\":\"Appointment confirmed\"}" },
+            "url": "{{baseUrl}}/api/v1/appointments/{{appointmentId}}/status"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Files",
+      "item": [
+        {
+          "name": "Create S3 upload URL",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"key\":\"profiles/demo/patient.jpg\",\"contentType\":\"image/jpeg\"}" },
+            "url": "{{baseUrl}}/api/v1/files/presign"
+          }
+        }
+      ]
+    }
+  ]
+}
