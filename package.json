@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon",
     "dev:old": "tsx watch src/server.ts",
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && node scripts/write-dist-package.mjs",
     "start": "node dist/src/server.js",
     "typecheck": "tsc --noEmit",
     "test": "jest --runInBand",
