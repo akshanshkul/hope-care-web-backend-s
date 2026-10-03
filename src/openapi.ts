@@ -26,8 +26,12 @@ export const openapi = {
           password: { type: 'string' },
           role: { type: 'string', enum: ['patient', 'doctor'] },
           name: { type: 'string' },
+          adhaar: { type: 'string' },
+          mobile: { type: 'string' },
+          lastName: { type: 'string' },
+          firstName: { type: 'string' },
         },
-        required: ['email', 'password', 'role', 'name'],
+        required: ['email', 'password', 'role', 'name', 'adhaar', 'mobile', 'lastName', 'firstName'],
       },
       LoginInput: {
         type: 'object',
