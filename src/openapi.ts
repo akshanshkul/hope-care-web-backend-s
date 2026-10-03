@@ -24,7 +24,7 @@ export const openapi = {
         properties: {
           email: { type: 'string' },
           password: { type: 'string' },
-          role: { type: 'string', enum: ['patient', 'doctor'] },
+          role: { type: 'string', enum: ['PATIENT', 'DOCTOR'] },
           name: { type: 'string' },
           adhaar: { type: 'string' },
           mobile: { type: 'string' },
